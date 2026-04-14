@@ -77,7 +77,7 @@ describe("exec agent env injection", () => {
   }
 
   describe("BASH_ENV", () => {
-    it("injects .bash_env by default", async () => {
+    it("injects .bash_env anchored to the workspace root by default", async () => {
       const tool = createExecTool({
         host: "gateway",
         security: "full",
@@ -85,7 +85,9 @@ describe("exec agent env injection", () => {
         cwd: TEST_CWD,
       });
       await tool.execute("c1", { command: "echo ok", yieldMs: 120_000 });
-      expect(capturedEnv().BASH_ENV).toBe(".bash_env");
+      // Default resolves to an absolute path so the file is found even when the agent
+      // passes a custom workdir that differs from the workspace root.
+      expect(capturedEnv().BASH_ENV).toBe(path.join(TEST_CWD, ".bash_env"));
     });
 
     it("uses a custom bashEnv path when configured", async () => {
@@ -199,7 +201,7 @@ describe("exec agent env injection", () => {
     });
     await tool.execute("c9", { command: "echo ok", yieldMs: 120_000 });
     const env = capturedEnv();
-    expect(env.BASH_ENV).toBe(".bash_env");
+    expect(env.BASH_ENV).toBe(path.join(workspace, ".bash_env"));
     expect(env.OPENCLAW_WORKSPACE).toBe(workspace);
     expect(env.OPENCLAW_AGENT).toBe("research");
   });

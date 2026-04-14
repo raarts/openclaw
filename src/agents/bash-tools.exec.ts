@@ -1582,8 +1582,17 @@ export function createExecTool(
       // BASH_ENV is stripped from the inherited env by the security policy; this replaces it
       // with a configurable path so agents can place per-workspace bash startup files without
       // setting BASH_ENV themselves each time. Empty string disables the injection.
+      // When no explicit bashEnv is configured and a workspace root is known, resolve the
+      // default ".bash_env" to an absolute path anchored at the workspace root. This ensures
+      // the file is found even when the agent passes a custom workdir that differs from the
+      // workspace root (a relative ".bash_env" would otherwise be looked up relative to the
+      // execution cwd, not the workspace root).
       const resolvedBashEnv =
-        typeof defaults?.bashEnv === "string" ? defaults.bashEnv : ".bash_env";
+        typeof defaults?.bashEnv === "string"
+          ? defaults.bashEnv
+          : defaultWorkdir
+            ? path.join(defaultWorkdir, ".bash_env")
+            : ".bash_env";
       if (resolvedBashEnv && !env.BASH_ENV) {
         env.BASH_ENV = resolvedBashEnv;
       }
@@ -1673,6 +1682,11 @@ export function createExecTool(
         : (explicitTimeoutSec ?? defaultTimeoutSec);
       const getWarningText = () => (warnings.length ? `${warnings.join("\n")}\n\n` : "");
       const usePty = params.pty === true && !sandbox;
+
+      // Log every exec invocation so it appears in journalctl (when the gateway runs as a
+      // systemd service) and in the openclaw log file, regardless of whether the command
+      // is elevated or not.
+      logInfo(`exec: run ${truncateMiddle(params.command, 120)}`);
 
       // Preflight: catch a common model failure mode (shell syntax leaking into Python/JS sources)
       // before we execute and burn tokens in cron loops.
