@@ -12,6 +12,7 @@ export type ExecToolDefaults = {
   trigger?: string;
   node?: string;
   pathPrepend?: string[];
+  bashEnv?: string | null;
   safeBins?: string[];
   strictInlineEval?: boolean;
   safeBinTrustedDirs?: string[];

@@ -442,6 +442,7 @@ const ToolExecBaseShape = {
   ask: z.enum(["off", "on-miss", "always"]).optional(),
   node: z.string().optional(),
   pathPrepend: z.array(z.string()).optional(),
+  bashEnv: z.string().optional(),
   safeBins: z.array(z.string()).optional(),
   strictInlineEval: z.boolean().optional(),
   safeBinTrustedDirs: z.array(z.string()).optional(),

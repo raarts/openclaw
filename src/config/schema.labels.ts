@@ -205,6 +205,7 @@ export const FIELD_LABELS: Record<string, string> = {
   "tools.sandbox": "Sandbox Tool Policy",
   "tools.sandbox.tools": "Sandbox Tool Allow/Deny Policy",
   "tools.exec.pathPrepend": "Exec PATH Prepend",
+  "tools.exec.bashEnv": "Exec Bash Startup File",
   "tools.exec.safeBins": "Exec Safe Bins",
   "tools.exec.strictInlineEval": "Require Inline-Eval Approval",
   "tools.exec.safeBinTrustedDirs": "Exec Safe Bin Trusted Dirs",

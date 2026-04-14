@@ -250,6 +250,9 @@ export type ExecToolConfig = {
   node?: string;
   /** Directories to prepend to PATH when running exec (gateway/sandbox). */
   pathPrepend?: string[];
+  /** File sourced by bash for non-interactive exec invocations via BASH_ENV.
+   * Default: ".bash_env". Set to empty string to disable. */
+  bashEnv?: string;
   /** Safe stdin-only binaries that can run without allowlist entries. */
   safeBins?: string[];
   /**

@@ -1578,6 +1578,24 @@ export function createExecTool(
         applyPathPrepend(env, defaultPathPrepend);
       }
 
+      // Inject agent context into every exec invocation.
+      // BASH_ENV is stripped from the inherited env by the security policy; this replaces it
+      // with a configurable path so agents can place per-workspace bash startup files without
+      // setting BASH_ENV themselves each time. Empty string disables the injection.
+      const resolvedBashEnv =
+        typeof defaults?.bashEnv === "string" ? defaults.bashEnv : ".bash_env";
+      if (resolvedBashEnv && !env.BASH_ENV) {
+        env.BASH_ENV = resolvedBashEnv;
+      }
+      // OPENCLAW_WORKSPACE exposes the agent workspace root to scripts.
+      if (defaultWorkdir && !env.OPENCLAW_WORKSPACE) {
+        env.OPENCLAW_WORKSPACE = defaultWorkdir;
+      }
+      // OPENCLAW_AGENT exposes the agent id to scripts.
+      if (agentId && !env.OPENCLAW_AGENT) {
+        env.OPENCLAW_AGENT = agentId;
+      }
+
       if (host === "node") {
         return executeNodeHostCommand({
           command: params.command,
